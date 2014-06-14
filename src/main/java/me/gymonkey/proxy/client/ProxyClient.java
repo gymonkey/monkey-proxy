@@ -2,6 +2,8 @@ package me.gymonkey.proxy.client;
 
 import java.util.concurrent.ThreadFactory;
 
+import me.gymonkey.proxy.client.handler.SocksBizHandler;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,7 @@ public class ProxyClient {
 
     private static final Logger logger             = LoggerFactory.getLogger(ProxyClient.class);
 
-    private static final String DEFAULT_LOCAL_ADDR = "0.0.0.0";
+    private static final String DEFAULT_LOCAL_ADDR = "127.0.0.1";
     private static final int    DEFAULT_LOCAL_PORT = 8086;
 
     ServerBootstrap             bootstrap;
@@ -53,8 +55,9 @@ public class ProxyClient {
 
             @Override
             protected void initChannel(Channel ch) throws Exception {
-                ch.pipeline().addLast(socksMsgEncoder);
-                ch.pipeline().addLast(new SocksInitRequestDecoder());
+                ch.pipeline().addLast("SOCKS_MSG_ENCODER",socksMsgEncoder);
+                ch.pipeline().addLast("SOCKS_REQUEST_DECODER", new SocksInitRequestDecoder());
+                ch.pipeline().addLast(new SocksBizHandler());
             }
         });
     }
